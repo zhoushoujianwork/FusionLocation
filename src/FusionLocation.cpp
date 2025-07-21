@@ -1,11 +1,6 @@
 #include "FusionLocation.h"
 #include <math.h>
 
-// 常量定义
-#define EARTH_RADIUS 6371000.0  // 地球半径 (米)
-#define DEG_TO_RAD 0.017453292519943295
-#define RAD_TO_DEG 57.29577951308232
-
 FusionLocation::FusionLocation(IIMUProvider* imu, double initLat, double initLng) 
     : imuProvider(imu), gpsProvider(nullptr), magProvider(nullptr),
       initialLat(initLat), initialLng(initLng) {

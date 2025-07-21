@@ -3,6 +3,14 @@
 
 #include <Arduino.h>
 
+// 通用常量定义
+#ifndef FUSION_CONSTANTS_DEFINED
+#define FUSION_CONSTANTS_DEFINED
+#define EARTH_RADIUS 6371000.0f  // 地球半径 (米)
+#define DEG_TO_RAD 0.017453292519943295f
+#define RAD_TO_DEG 57.29577951308232f
+#endif
+
 // 标准数据结构定义
 struct GPSData {
     double lat, lng;

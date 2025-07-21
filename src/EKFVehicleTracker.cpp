@@ -1,10 +1,5 @@
 #include "EKFVehicleTracker.h"
 
-// 常量定义
-#define EARTH_RADIUS 6371000.0f
-#define DEG_TO_RAD 0.017453292519943295f
-#define RAD_TO_DEG 57.29577951308232f
-
 EKFVehicleTracker::EKFVehicleTracker(IIMUProvider* imu, double initLat, double initLng) 
     : imuProvider(imu), gpsProvider(nullptr), magProvider(nullptr),
       originLat(initLat), originLng(initLng) {
