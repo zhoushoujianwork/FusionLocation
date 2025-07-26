@@ -105,6 +105,11 @@ public:
     // 调试信息
     void getStateVector(float state[EKF_STATE_DIM]);
     void getCovarianceMatrix(float covariance[EKF_STATE_DIM * EKF_STATE_DIM]);
+    void setDebug(bool enable) { debugEnabled = enable; }
+    
+    // 相对位移控制
+    void resetOrigin();                    // 重置起始点为当前位置
+    void setOrigin(double lat, double lng); // 设置指定位置为起始点
 
 private:
     // 传感器提供者
@@ -120,9 +125,16 @@ private:
     EKFState ekfState;
     Position currentPosition;
     
+    // 调试控制
+    bool debugEnabled;
+    
     // 坐标转换
     double originLat, originLng;
     bool hasOrigin;
+    
+    // 起始点记录 (用于计算相对位移)
+    double displacementOriginLat, displacementOriginLng;
+    bool hasDisplacementOrigin;
     
     // EKF核心算法
     void predict(float deltaTime);
@@ -144,6 +156,7 @@ private:
     // 工具函数
     float normalizeAngle(float angle);
     void updatePositionFromState();
+    void calculateRelativeDisplacement();
 };
 
 #endif // EKF_VEHICLE_TRACKER_H

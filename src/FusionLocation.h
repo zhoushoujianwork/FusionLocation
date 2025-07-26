@@ -7,8 +7,12 @@
 #ifndef FUSION_CONSTANTS_DEFINED
 #define FUSION_CONSTANTS_DEFINED
 #define EARTH_RADIUS 6371000.0f  // 地球半径 (米)
+#ifndef DEG_TO_RAD
 #define DEG_TO_RAD 0.017453292519943295f
+#endif
+#ifndef RAD_TO_DEG
 #define RAD_TO_DEG 57.29577951308232f
+#endif
 #endif
 
 // 标准数据结构定义
@@ -57,6 +61,14 @@ struct Position {
     uint32_t timestamp;        // 时间戳
     bool valid;                // 数据有效性
     
+    // 相对位移 (相对于起始点的2D位移，单位：米)
+    struct {
+        float x;               // 东西方向位移 (+东/-西)
+        float y;               // 南北方向位移 (+北/-南)
+        float distance;        // 距离起始点的直线距离
+        float bearing;         // 相对于起始点的方位角 (度, 0-360)
+    } displacement;
+    
     // 数据来源标识
     struct {
         bool hasGPS;
@@ -66,6 +78,10 @@ struct Position {
     
     Position() : lat(0), lng(0), altitude(0), accuracy(0), heading(0), 
                  speed(0), timestamp(0), valid(false) {
+        displacement.x = 0;
+        displacement.y = 0;
+        displacement.distance = 0;
+        displacement.bearing = 0;
         sources.hasGPS = false;
         sources.hasIMU = false;
         sources.hasMag = false;
@@ -125,6 +141,13 @@ public:
     // 获取融合后的位置
     Position getPosition();
     
+    // 调试控制
+    void setDebug(bool enable) { debugEnabled = enable; }
+    
+    // 相对位移控制
+    void resetOrigin();                    // 重置起始点为当前位置
+    void setOrigin(double lat, double lng); // 设置指定位置为起始点
+    
     // 状态查询
     bool isInitialized();
     float getPositionAccuracy();
@@ -142,9 +165,16 @@ private:
     double initialLat, initialLng;
     bool hasInitialPosition;
     
+    // 起始点记录 (用于计算相对位移)
+    double originLat, originLng;
+    bool hasOrigin;
+    
     // 滤波器状态
     FilterState filterState;
     Position currentPosition;
+    
+    // 调试控制
+    bool debugEnabled;
     
     // 内部方法
     void updateWithIMU(const IMUData& imuData);
@@ -158,6 +188,7 @@ private:
     float constrainAngle(float angle);
     double metersToLatitude(float meters);
     double metersToLongitude(float meters, double lat);
+    void calculateRelativeDisplacement();
 };
 
 #endif // FUSION_LOCATION_H
